@@ -70,9 +70,13 @@ const Dashboard: React.FC = () => {
   };
 
   const handleDelete = async (id: number) => {
+    if (!window.confirm("Are you sure you want to delete this entry?")) {
+      return;
+    }
     try {
       const response = await axios.delete(`http://localhost:8080/inventory/${id}`);
-      if (response.status === 200) {
+      if (response.status === 200 || response.status === 204) {
+        alert("Dashboard entry deleted successfully!");
         fetchDashboards();
       } else {
         alert("Failed to delete dashboard entry");

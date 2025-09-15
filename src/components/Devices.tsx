@@ -55,9 +55,13 @@ const Device: React.FC = () => {
   };
 
   const handleDelete = async (did: number) => {
+      if (!window.confirm("Are you sure you want to delete this entry?")) {
+            return;
+      }
     try {
       const response = await axios.delete(`http://localhost:8080/device/${did}`);
-      if (response.status === 200) {
+      if (response.status === 200 || response.status === 204) {
+        alert("Device entry deleted successfully!");
         fetchDevices();
       } else {
         alert("Failed to delete device");

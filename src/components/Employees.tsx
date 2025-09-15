@@ -55,15 +55,17 @@ const Employee: React.FC = () => {
   };
 
   const handleDelete = async (uid: number) => {
+    if (!window.confirm("Are you sure you want to delete this entry?")) {
+      return;
+    }
+
     try {
       const response = await axios.delete(`http://localhost:8080/user/${uid}`);
-      if (response.status === 200) {
-        fetchEmployees();
-      } else {
-        alert("Failed to delete employee");
-      }
-    } catch (error) {
-      alert("Error deleting employee");
+      alert(response.data.message); // always exists now
+      fetchEmployees();
+    } catch (error: any) {
+      const errorMessage = error.response?.data?.message || "Error deleting employee";
+      alert(errorMessage);
       console.error(error);
     }
   };

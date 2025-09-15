@@ -132,7 +132,8 @@ const Device: React.FC = () => {
                     </Button>
                   </TableCell>
                 </TableRow>
-              ))
+              )
+          )
             ) : (
               <TableRow>
                 <TableCell colSpan={4} align="center">

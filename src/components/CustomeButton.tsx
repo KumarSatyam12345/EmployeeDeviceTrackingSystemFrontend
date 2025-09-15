@@ -7,6 +7,7 @@ type CustomeButtonProps = {
   variant: "text" | "contained" | "outlined";
 };
 
+
 function CustomeButton({ onClick, label, color, variant }: CustomeButtonProps) {
   return (
     <Button

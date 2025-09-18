@@ -44,6 +44,7 @@ const Employee: React.FC = () => {
       if (response.status === 200 || response.status === 201) {
         setName("");
         setGmail("");
+        alert("Employee entry added successfully!");
         fetchEmployees();
       } else {
         alert("Failed to add employee");

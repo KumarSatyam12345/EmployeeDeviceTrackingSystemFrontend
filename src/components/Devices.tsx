@@ -44,6 +44,7 @@ const Device: React.FC = () => {
       if (response.status === 200 || response.status === 201) {
         setdName("");
         setdModel("");
+        alert("Device entry added successfully!");
         fetchDevices();
       } else {
         alert("Failed to add device");

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   Box,
   Button,
@@ -15,14 +15,21 @@ import {
 } from "@mui/material";
 import axios from "axios";
 
+interface DeviceType {
+  did: number;
+  dName: string;
+  dModel: string;
+}
+
 const Device: React.FC = () => {
   const [dName, setdName] = useState("");
   const [dModel, setdModel] = useState("");
-  const [devices, setDevices] = useState<any[]>([]);
+  const [devices, setDevices] = useState<DeviceType[]>([]);
+  const effectRan = useRef(false); // <--- ref to prevent double useEffect run
 
   const fetchDevices = async () => {
     try {
-      const response = await axios.get("http://localhost:8080/device/getAllDevice");
+      const response = await axios.get<DeviceType[]>("http://localhost:8080/device/getAllDevice");
       setDevices(response.data);
     } catch (error) {
       console.error("Error fetching devices", error);
@@ -31,6 +38,9 @@ const Device: React.FC = () => {
   };
 
   useEffect(() => {
+    if (effectRan.current) return; // skip if already run
+    effectRan.current = true;
+
     fetchDevices();
   }, []);
 
@@ -40,12 +50,11 @@ const Device: React.FC = () => {
 
     try {
       const response = await axios.post("http://localhost:8080/device/saveDevice", newDevice);
-
       if (response.status === 200 || response.status === 201) {
         setdName("");
         setdModel("");
         alert("Device entry added successfully!");
-        fetchDevices();
+        await fetchDevices();
       } else {
         alert("Failed to add device");
       }
@@ -56,14 +65,13 @@ const Device: React.FC = () => {
   };
 
   const handleDelete = async (did: number) => {
-      if (!window.confirm("Are you sure you want to delete this entry?")) {
-            return;
-      }
+    if (!window.confirm("Are you sure you want to delete this entry?")) return;
+
     try {
       const response = await axios.delete(`http://localhost:8080/device/${did}`);
       if (response.status === 200 || response.status === 204) {
         alert("Device entry deleted successfully!");
-        fetchDevices();
+        await fetchDevices();
       } else {
         alert("Failed to delete device");
       }
@@ -75,7 +83,6 @@ const Device: React.FC = () => {
 
   return (
     <Box sx={{ p: 4 }}>
-      {/* Page Title */}
       <Typography variant="h4" color="primary" gutterBottom>
         Device Management
       </Typography>
@@ -83,7 +90,6 @@ const Device: React.FC = () => {
         Add, view, and manage your devices
       </Typography>
 
-      {/* Form Toolbar */}
       <Toolbar
         component="form"
         onSubmit={handleSubmit}
@@ -108,7 +114,6 @@ const Device: React.FC = () => {
         </Button>
       </Toolbar>
 
-      {/* Full Width Table */}
       <TableContainer component={Paper} sx={{ width: "100%" }}>
         <Table>
           <TableHead sx={{ backgroundColor: "primary.main" }}>
@@ -121,8 +126,8 @@ const Device: React.FC = () => {
           </TableHead>
           <TableBody>
             {devices.length > 0 ? (
-              devices.map((device, index) => (
-                <TableRow key={index} hover>
+              devices.map((device) => (
+                <TableRow key={device.did} hover>
                   <TableCell>{device.did}</TableCell>
                   <TableCell>{device.dName}</TableCell>
                   <TableCell>{device.dModel}</TableCell>
@@ -137,8 +142,7 @@ const Device: React.FC = () => {
                     </Button>
                   </TableCell>
                 </TableRow>
-              )
-          )
+              ))
             ) : (
               <TableRow>
                 <TableCell colSpan={4} align="center">

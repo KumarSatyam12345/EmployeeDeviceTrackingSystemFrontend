@@ -25,9 +25,6 @@ interface DeviceContextType {
   addDevice: (device: Device) => void;
   addEmployee: (employee: Employee) => void;
   addDashboard: (dashboard: Dashboard) => void;
-  fetchDevices: () => Promise<Device[]>;
-  fetchEmployees: () => Promise<Employee[]>;
-  fetchDashboards: () => Promise<Dashboard[]>;
 }
  
 const DeviceContext = createContext<DeviceContextType | undefined>(undefined);
@@ -38,7 +35,7 @@ export const DeviceProvider: React.FC<{ children: ReactNode }> = ({ children }) 
   const [dashboards, setDashboards] = useState<Dashboard[]>([]);
  
   const API_URL = "http://localhost:8080"; // Mock API
- 
+
   const fetchDevices = async (): Promise<Device[]> => {
     try {
       const response = await axios.get(`${API_URL}/device/getAllDevice`); // `/posts` for mock data
@@ -53,41 +50,7 @@ export const DeviceProvider: React.FC<{ children: ReactNode }> = ({ children }) 
       return [];
     }
   };
- 
-  const fetchEmployees = async (): Promise<Employee[]> => {
-    try {
-      const response = await axios.get(`${API_URL}/user/getAllUser`); 
-      const employees = response.data.map((user: any) => ({
-        name: user.name,
-        email: user.email,
-      }));
-      setEmployees(employees);
-      return employees;
-    } catch (error) {
-      console.error("Failed to fetch employees:", error);
-      return [];
-    }
-  };
- 
-  const fetchDashboards = async (): Promise<Dashboard[]> => {
-    try {
-      const response = await axios.get(`${API_URL}/inventory/getAllRepo`); 
-      console.log(response);
-      
-      const dashboards = response.data.map((result: any) => ({
-        deviceID: result.user.uid,
-        employeeID: result.device.dId,
-        issueDate: result.dateofIssue,
-        returnDate: result.returnDate,
-      }));
-      setDashboards(dashboards);
-      return dashboards;
-    } catch (error) {
-      console.error("Failed to fetch dashboards:", error);
-      return [];
-    }
-  };
- 
+
   const addDevice = (device: Device) => {
     setDevices((prevDevices) => [...prevDevices, device]);
   };
@@ -99,13 +62,11 @@ export const DeviceProvider: React.FC<{ children: ReactNode }> = ({ children }) 
   const addDashboard = (dashboard: Dashboard) => {
     setDashboards((prevDashboards) => [...prevDashboards, dashboard]);
   };
- 
+
   useEffect(() => {
     fetchDevices();
-    fetchEmployees();
-    fetchDashboards();
   }, []);
- 
+
   return (
     <DeviceContext.Provider
       value={{
@@ -115,9 +76,6 @@ export const DeviceProvider: React.FC<{ children: ReactNode }> = ({ children }) 
         addDevice,
         addEmployee,
         addDashboard,
-        fetchDevices,
-        fetchEmployees,
-        fetchDashboards,
       }}
     >
       {children}

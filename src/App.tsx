@@ -1,14 +1,13 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Login from "./components/Login";
 import NewUserLogin from "./components/NewUserLogin";
-import NewDashboard from "./components/NewDashBoard";
 import Dashboard from "./components/DashBoard";
 import Employees from "./components/Employees";
 import Devices from "./components/Devices";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { DeviceProvider } from "./components/DeviceProvider";
 import Layout from "./components/Layout";
- 
+
 const App = () => {
   return (
     <DeviceProvider>
@@ -16,21 +15,21 @@ const App = () => {
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route path="/newuserlogin" element={<NewUserLogin />} />
- 
+
           <Route element={<ProtectedRoute />}>
             <Route
               path="/"
               element={
                 <Layout>
-                  <NewDashboard />
+                  <Dashboard />
                 </Layout>
               }
             />
             <Route
-              path="/newdashboard"
+              path="/dashboard"
               element={
                 <Layout>
-                  <NewDashboard />
+                  <Dashboard />
                 </Layout>
               }
             />

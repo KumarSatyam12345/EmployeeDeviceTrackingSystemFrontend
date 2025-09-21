@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   Box,
   Button,
@@ -22,6 +22,7 @@ const Dashboard: React.FC = () => {
   const [dateOfIssue, setDateOfIssue] = useState("");
   const [returnDate, setReturnDate] = useState("");
   const [dashboards, setDashboards] = useState<any[]>([]);
+  const effectRan = useRef(false); // <--- prevent double useEffect run
 
   const fetchDashboards = async () => {
     try {
@@ -34,6 +35,8 @@ const Dashboard: React.FC = () => {
   };
 
   useEffect(() => {
+    if (effectRan.current) return; // skip if already run
+    effectRan.current = true;
     fetchDashboards();
   }, []);
 
@@ -54,7 +57,7 @@ const Dashboard: React.FC = () => {
 
       if (response.status === 200 || response.status === 201) {
         alert("Dashboard entry added successfully!");
-        fetchDashboards();
+        await fetchDashboards(); // ensure UI updates
         setUid("");
         setDid("");
         setDateOfIssue("");
@@ -70,14 +73,13 @@ const Dashboard: React.FC = () => {
   };
 
   const handleDelete = async (id: number) => {
-    if (!window.confirm("Are you sure you want to delete this entry?")) {
-      return;
-    }
+    if (!window.confirm("Are you sure you want to delete this entry?")) return;
+
     try {
       const response = await axios.delete(`http://localhost:8080/inventory/${id}`);
       if (response.status === 200 || response.status === 204) {
         alert("Dashboard entry deleted successfully!");
-        fetchDashboards();
+        await fetchDashboards(); // ensure UI updates
       } else {
         alert("Failed to delete dashboard entry");
       }
@@ -98,7 +100,6 @@ const Dashboard: React.FC = () => {
         Assign devices to employees and track issue/return dates
       </Typography>
 
-      {/* Form Toolbar */}
       <Toolbar
         component="form"
         onSubmit={handleSubmit}
@@ -140,7 +141,6 @@ const Dashboard: React.FC = () => {
         </Button>
       </Toolbar>
 
-      {/* Table */}
       <TableContainer component={Paper} sx={{ width: "100%", overflowX: "auto" }}>
         <Table>
           <TableHead sx={{ backgroundColor: "primary.main" }}>

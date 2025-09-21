@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   Box,
   Button,
@@ -19,6 +19,7 @@ const Employee: React.FC = () => {
   const [name, setName] = useState("");
   const [gmail, setGmail] = useState("");
   const [employees, setEmployees] = useState<any[]>([]);
+  const hasFetched = useRef(false); // Prevent duplicate calls
 
   const fetchEmployees = async () => {
     try {
@@ -31,7 +32,10 @@ const Employee: React.FC = () => {
   };
 
   useEffect(() => {
-    fetchEmployees();
+    if (!hasFetched.current) {
+      fetchEmployees();
+      hasFetched.current = true;
+    }
   }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -40,7 +44,6 @@ const Employee: React.FC = () => {
 
     try {
       const response = await axios.post("http://localhost:8080/user/SaveUser", newEmployee);
-
       if (response.status === 200 || response.status === 201) {
         setName("");
         setGmail("");
@@ -56,13 +59,11 @@ const Employee: React.FC = () => {
   };
 
   const handleDelete = async (uid: number) => {
-    if (!window.confirm("Are you sure you want to delete this entry?")) {
-      return;
-    }
+    if (!window.confirm("Are you sure you want to delete this entry?")) return;
 
     try {
       const response = await axios.delete(`http://localhost:8080/user/${uid}`);
-      alert(response.data.message); // always exists now
+      alert(response.data.message);
       fetchEmployees();
     } catch (error: any) {
       const errorMessage = error.response?.data?.message || "Error deleting employee";
@@ -73,7 +74,6 @@ const Employee: React.FC = () => {
 
   return (
     <Box sx={{ p: 4 }}>
-      {/* Page Title */}
       <Typography variant="h4" color="primary" gutterBottom>
         Employee Management
       </Typography>
@@ -81,7 +81,6 @@ const Employee: React.FC = () => {
         Add, view, and manage employees
       </Typography>
 
-      {/* Form Toolbar */}
       <Toolbar
         component="form"
         onSubmit={handleSubmit}
@@ -107,7 +106,6 @@ const Employee: React.FC = () => {
         </Button>
       </Toolbar>
 
-      {/* Full Width Table */}
       <TableContainer component={Paper} sx={{ width: "100%", overflowX: "auto" }}>
         <Table>
           <TableHead sx={{ backgroundColor: "primary.main" }}>

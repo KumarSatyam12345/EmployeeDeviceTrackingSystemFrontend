@@ -1,6 +1,7 @@
-import { Button, TextField } from "@mui/material";
+import { Button, TextField, Typography } from "@mui/material";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 import styled from "styled-components";
 
 const Article = styled.article`
@@ -14,78 +15,74 @@ const Article = styled.article`
 
 const Box = styled.div`
   width: 40%;
-  height: 50%;
-  border-radius: 5px;
+  padding: 2rem;
+  border-radius: 8px;
   background-color: lightgray;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-`;
-
-const TextFieldd = styled(TextField)`
-  width: 100%;
-  border-radius: 5px;
-  &:focus {
-    border: 1px solid red;
-  }
-`;
-
-const Buttonn = styled(Button)`
-  height: 40%;
-  width: 100%;
-`;
-
-const Typography = styled.label`
-  font-size: 3em;
-  color: red;
 `;
 
 function Login() {
-  const [username, setUsername] = useState("");
+  const [gmail, setGmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
 
-  const handleLogin = (event: React.FormEvent) => {
-    event.preventDefault();
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      const response = await axios.post("http://localhost:8080/user/login", {
+        gmail,
+        password,
+      });
 
-    const trimmedUsername = username.trim();
-    const trimmedPassword = password.trim();
-
-    if (trimmedUsername === "admin123" && trimmedPassword === "admin@123") {
       localStorage.setItem("auth", "true");
+      localStorage.setItem("user", JSON.stringify(response.data.user));
+      alert("Login successful!");
       navigate("/dashboard", { replace: true });
-      setUsername("");
+    } catch (err: any) {
+      alert(err.response?.data || "Invalid email or password");
       setPassword("");
-    } else {
-      alert("Invalid credentials ,plz signup");
-      navigate("/newuserlogin", { replace: true });
-      setPassword("");
-      setUsername("");
     }
   };
 
   return (
     <Article>
       <Box>
-        <Typography>Login Page</Typography>
-        <form onSubmit={handleLogin}>
-          <TextFieldd
-            type="text"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            placeholder="Username"
+        <Typography variant="h4" color="error" gutterBottom>
+          Login Page
+        </Typography>
+        <form
+          onSubmit={handleLogin}
+          style={{ width: "100%", display: "flex", flexDirection: "column", gap: "1rem" }}
+        >
+          <TextField
+            type="email"
+            label="Email"
+            value={gmail}
+            onChange={(e) => setGmail(e.target.value)}
+            fullWidth
+            required
           />
-          <TextFieldd
+          <TextField
             type="password"
+            label="Password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            placeholder="Password"
+            fullWidth
+            required
           />
-
-          <Buttonn variant="contained" type="submit">
+          <Button variant="contained" type="submit" fullWidth>
             Login
-          </Buttonn>
+          </Button>
+          <Button
+            variant="outlined"
+            color="secondary"
+            fullWidth
+            onClick={() => navigate("/signup")}
+          >
+            Create User
+          </Button>
         </form>
       </Box>
     </Article>

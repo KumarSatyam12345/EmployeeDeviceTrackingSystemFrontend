@@ -1,23 +1,23 @@
-import React, { createContext, useState, useEffect, ReactNode, useContext } from "react";
+import React, { createContext, useState, useEffect, ReactNode, useContext, useMemo } from "react";
 import axios from "axios";
- 
+
 interface Device {
   name: string;
   model: string;
 }
- 
+
 interface Employee {
   name: string;
   email: string;
 }
- 
+
 interface Dashboard {
   deviceID: string;
   employeeID: string;
   issueDate: string;
   returnDate: string;
 }
- 
+
 interface DeviceContextType {
   devices: Device[];
   employees: Employee[];
@@ -26,19 +26,19 @@ interface DeviceContextType {
   addEmployee: (employee: Employee) => void;
   addDashboard: (dashboard: Dashboard) => void;
 }
- 
+
 const DeviceContext = createContext<DeviceContextType | undefined>(undefined);
- 
+
 export const DeviceProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [devices, setDevices] = useState<Device[]>([]);
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [dashboards, setDashboards] = useState<Dashboard[]>([]);
- 
-  const API_URL = "http://localhost:8080"; // Mock API
+
+  const API_URL = "http://localhost:8080";
 
   const fetchDevices = async (): Promise<Device[]> => {
     try {
-      const response = await axios.get(`${API_URL}/device/getAllDevice`); // `/posts` for mock data
+      const response = await axios.get(`${API_URL}/device/getAllDevice`);
       const devices = response.data.map((result: any) => ({
         name: result.name,
         model: result.model,
@@ -54,11 +54,11 @@ export const DeviceProvider: React.FC<{ children: ReactNode }> = ({ children }) 
   const addDevice = (device: Device) => {
     setDevices((prevDevices) => [...prevDevices, device]);
   };
- 
+
   const addEmployee = (employee: Employee) => {
     setEmployees((prevEmployees) => [...prevEmployees, employee]);
   };
- 
+
   const addDashboard = (dashboard: Dashboard) => {
     setDashboards((prevDashboards) => [...prevDashboards, dashboard]);
   };
@@ -67,22 +67,26 @@ export const DeviceProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     fetchDevices();
   }, []);
 
+  // ✅ Memoize the context value
+  const contextValue = useMemo(
+    () => ({
+      devices,
+      employees,
+      dashboards,
+      addDevice,
+      addEmployee,
+      addDashboard,
+    }),
+    [devices, employees, dashboards] // dependencies
+  );
+
   return (
-    <DeviceContext.Provider
-      value={{
-        devices,
-        employees,
-        dashboards,
-        addDevice,
-        addEmployee,
-        addDashboard,
-      }}
-    >
+    <DeviceContext.Provider value={contextValue}>
       {children}
     </DeviceContext.Provider>
   );
 };
- 
+
 export const useDeviceContext = () => {
   const context = useContext(DeviceContext);
   if (!context) {
@@ -90,5 +94,3 @@ export const useDeviceContext = () => {
   }
   return context;
 };
- 
- 

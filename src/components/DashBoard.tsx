@@ -124,7 +124,7 @@ const Dashboard: React.FC = () => {
           type="date"
           value={dateOfIssue}
           onChange={(e) => setDateOfIssue(e.target.value)}
-          InputLabelProps={{ shrink: true }}
+          slotProps={{ inputLabel: { shrink: true } }}
           required
           sx={{ minWidth: 150, flex: 1 }}
         />
@@ -133,7 +133,7 @@ const Dashboard: React.FC = () => {
           type="date"
           value={returnDate}
           onChange={(e) => setReturnDate(e.target.value)}
-          InputLabelProps={{ shrink: true }}
+          slotProps={{ inputLabel: { shrink: true } }}
           sx={{ minWidth: 150, flex: 1 }}
         />
         <Button variant="contained" type="submit" sx={{ height: 56 }}>
@@ -154,8 +154,8 @@ const Dashboard: React.FC = () => {
           </TableHead>
           <TableBody>
             {dashboards.length > 0 ? (
-              dashboards.map((dashboard, index) => (
-                <TableRow key={index} hover>
+              dashboards.map((dashboard) => (
+                <TableRow key={dashboard.id} hover>
                   <TableCell>{dashboard.user.uid}</TableCell>
                   <TableCell>{dashboard.device.did}</TableCell>
                   <TableCell>{dashboard.dateOfIssue}</TableCell>
@@ -180,6 +180,7 @@ const Dashboard: React.FC = () => {
               </TableRow>
             )}
           </TableBody>
+
         </Table>
       </TableContainer>
     </Box>

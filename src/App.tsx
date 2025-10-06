@@ -14,19 +14,12 @@ const App = () => {
       <Router>
         <Routes>
           <Route path="/login" element={<Login />} />
-          <Route path="/newuserlogin" element={<NewUserLogin />} />
+        <Route path="/signup" element={<NewUserLogin />} />
 
+          {/* Protected routes */}
           <Route element={<ProtectedRoute />}>
             <Route
               path="/"
-              element={
-                <Layout>
-                  <Dashboard />
-                </Layout>
-              }
-            />
-            <Route
-              path="/dashboard"
               element={
                 <Layout>
                   <Dashboard />
@@ -63,7 +56,5 @@ const App = () => {
     </DeviceProvider>
   );
 };
- 
+
 export default App;
- 
- 

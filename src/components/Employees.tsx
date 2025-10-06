@@ -118,8 +118,8 @@ const Employee: React.FC = () => {
           </TableHead>
           <TableBody>
             {employees.length > 0 ? (
-              employees.map((employee, index) => (
-                <TableRow key={index} hover>
+              employees.map((employee) => (
+                <TableRow key={employee.uid} hover>
                   <TableCell>{employee.uid}</TableCell>
                   <TableCell>{employee.name}</TableCell>
                   <TableCell>{employee.gmail}</TableCell>

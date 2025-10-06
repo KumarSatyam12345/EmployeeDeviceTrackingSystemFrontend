@@ -1,12 +1,11 @@
 import { Button } from "@mui/material";
 
 type CustomeButtonProps = {
-  onClick: () => void;
-  label: string;
-  color: "primary" | "secondary";
-  variant: "text" | "contained" | "outlined";
+  readonly onClick: () => void;
+  readonly label: string;
+  readonly color: "primary" | "secondary";
+  readonly variant: "text" | "contained" | "outlined";
 };
-
 
 function CustomeButton({ onClick, label, color, variant }: CustomeButtonProps) {
   return (
